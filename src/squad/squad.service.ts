@@ -1,58 +1,28 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
-import { Player } from './player.model';
-import {HttpClient} from "@angular/common/http";
-import {exhaustMap, filter, map, tap} from "rxjs";
-import {toObservable} from "@angular/core/rxjs-interop";
-import {Club} from "./club.model";
+import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { exhaustMap, filter, map, tap } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Players } from './player.model';
+import { ClubService } from '../club/club.service';
 
 @Injectable({ providedIn: 'root' })
 export class SquadService {
-  private transfermarktApi = inject(HttpClient);
-  private transfermarktUrl = 'https://transfermarkt-api.fly.dev';
+  loadingSquad = signal(false);
 
-  clubChosen = signal<Club | undefined>(undefined);
-  clubId = computed(() => this.clubChosen()?.id);
-  clubName = computed(() => this.clubChosen()?.name);
-  competitionChosen = signal('');
+  constructor(private http: HttpClient,
+              private clubService: ClubService) {}
 
-  squad$= toObservable(this.clubId).pipe(
-    tap(clubId => console.log('club chosen', clubId)),
-    filter(clubId => !!clubId),
-    tap(clubId => console.log('fetching squad for club', clubId)),
-    exhaustMap(clubId =>
-      this.transfermarktApi
-        .get<Players>(`${this.transfermarktUrl}/clubs/${clubId}/players`)
-        .pipe(map(data =>
-          data.players.sort((a, b) => a.name.localeCompare(b.name))))
-    )
+  squad$= toObservable(this.clubService.clubChosen).pipe(
+    filter(club => !!club),
+    tap(club => {
+      console.log('fetching squad for club', club!.name);
+      this.loadingSquad.set(true);
+    }),
+    map(club =>
+      `https://transfermarkt-api.fly.dev/clubs/${club!.id}/players`),
+    exhaustMap(playersUrl => this.http.get<Players>(playersUrl).pipe(
+      map(data => data.players.sort((a, b) => a.name.localeCompare(b.name)))),
+    ),
+    tap(() => this.loadingSquad.set(false))
   );
-
-  clubs$= toObservable(this.competitionChosen).pipe(
-    tap(competition => console.log('competition chosen', competition)),
-    filter(competition => !!competition),
-    tap(competition => console.log('fetching clubs for competition', competition)),
-    exhaustMap(competition =>
-      this.transfermarktApi
-        .get<Clubs>(`${this.transfermarktUrl}/competitions/${this.getCompetitionIdByName(competition)}/clubs`)
-        .pipe(map(data =>
-          data.clubs.sort((a, b) => a.name.localeCompare(b.name))),
-        )
-    )
-  );
-
-  private getCompetitionIdByName(name: string): string {
-    switch (name) {
-      case 'Bundesliga': return 'L1';
-      case 'Premier League': return 'GB1';
-      default: return '';
-    }
-  }
-}
-
-interface Clubs {
-  clubs: Club[];
-}
-
-interface Players {
-  players: Player[];
 }

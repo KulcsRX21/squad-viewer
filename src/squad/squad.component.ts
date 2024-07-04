@@ -1,18 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ClubService } from '../club/club.service';
 import { SquadService } from './squad.service';
-import {AsyncPipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'sv-squad',
   standalone: true,
-  imports: [MatTableModule, NgIf, AsyncPipe],
+  imports: [MatTableModule, MatProgressSpinner],
   template: `
-    @if (!currentSquad()) {
-      <h3>Select a club to view its squad</h3>
-    }
-    @else {
-      <h3>{{ currentSquad() }}</h3>
+    @if (!!clubName()) {
+      <h3>{{ clubName() }}</h3>
+      @if (loadingSquad()) { <mat-spinner /> }
       <table mat-table [dataSource]="squad$" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef> Name</th>
@@ -29,9 +28,11 @@ import {AsyncPipe, NgIf} from "@angular/common";
   `
 })
 export class SquadComponent {
-  private service = inject(SquadService);
-  squad$ = this.service.squad$;
-  currentSquad = this.service.clubName;
-
+  clubName = computed(() => this.clubService.clubChosen()?.name);
   displayedColumns: string[] = ['name', 'age'];
+  loadingSquad = this.squadService.loadingSquad;
+  squad$ = this.squadService.squad$;
+
+  constructor(private clubService: ClubService,
+              private squadService: SquadService) {}
 }
