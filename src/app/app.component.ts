@@ -23,6 +23,7 @@ import { SquadComponent } from '../squad/squad.component';
   `,
   styles: `
     #sv-app { height: 100%; display: flex; flex-direction: column; }
+    mat-sidenav { padding: 5px; width: 340px; }
     mat-sidenav-container { flex: 1; }
     mat-sidenav-content { padding: 10px; }
   `
