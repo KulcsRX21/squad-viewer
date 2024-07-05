@@ -5,7 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'marketValue'
 })
 export class MarketValuePipe implements PipeTransform {
-  transform(value: string): string {
+  transform(value?: string): string {
+    if (!value) return 'N/A';
     const numericValue = parseFloat(value.slice(1, -1));
     const formattedNumber = (numericValue % 1 === 0 ?
       numericValue.toString() : numericValue.toFixed(1)

@@ -1,7 +1,8 @@
 export interface Player {
-  name: string;
   age: number;
-  marketValue: string;
+  marketValue?: string;
+  name: string;
+  position: string;
   status?: string;
 }
 
