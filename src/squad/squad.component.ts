@@ -6,13 +6,14 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ClubService } from '../club/club.service';
 import { SquadService } from './squad.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { MarketValuePipe } from './market-value.pipe';
 
 @Component({
   selector: 'sv-squad',
   standalone: true,
   imports: [AsyncPipe,
     MatBadge, MatTableModule, MatProgressSpinner,
-    SpinnerComponent
+    SpinnerComponent, MarketValuePipe
   ],
   template: `
     @if (clubName()) { <h3>{{ clubName() }}</h3> }
@@ -35,6 +36,10 @@ import { SpinnerComponent } from '../spinner/spinner.component';
             <th mat-header-cell *matHeaderCellDef>Age</th>
             <td mat-cell *matCellDef="let player">{{ player.age }}</td>
           </ng-container>
+          <ng-container matColumnDef="marketValue">
+            <th mat-header-cell *matHeaderCellDef>Market Value</th>
+            <td mat-cell *matCellDef="let player">{{ player.marketValue | marketValue }}</td>
+          </ng-container>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
@@ -45,7 +50,7 @@ import { SpinnerComponent } from '../spinner/spinner.component';
 })
 export class SquadComponent {
   clubName = computed(() => this.clubService.clubChosen()?.name);
-  displayedColumns: string[] = ['name', 'age'];
+  displayedColumns: string[] = ['name', 'age', 'marketValue'];
   loadingSquad = this.squadService.loadingSquad;
   squad$ = this.squadService.squad$;
 
