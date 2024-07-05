@@ -1,5 +1,6 @@
 import { Component, computed } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
+import { MatBadge } from '@angular/material/badge';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ClubService } from '../club/club.service';
@@ -9,7 +10,10 @@ import { SpinnerComponent } from '../spinner/spinner.component';
 @Component({
   selector: 'sv-squad',
   standalone: true,
-  imports: [MatTableModule, MatProgressSpinner, AsyncPipe, SpinnerComponent],
+  imports: [AsyncPipe,
+    MatBadge, MatTableModule, MatProgressSpinner,
+    SpinnerComponent
+  ],
   template: `
     @if (clubName()) { <h3>{{ clubName() }}</h3> }
     @else { <p class="hint">← Choose a club to view its squad</p> }
@@ -18,12 +22,18 @@ import { SpinnerComponent } from '../spinner/spinner.component';
       @else {
         <table mat-table [dataSource]="squad" class="mat-elevation-z8">
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef> Name</th>
-            <td mat-cell *matCellDef="let player"> {{ player.name }}</td>
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let player">
+              @if (player.status === 'Team captain') {
+                <div matBadge="C" matBadgeOverlap="false" matBadgePosition="before">
+                  {{ player.name }}
+                </div>
+              } @else { {{ player.name }} }
+            </td>
           </ng-container>
           <ng-container matColumnDef="age">
-            <th mat-header-cell *matHeaderCellDef> Age</th>
-            <td mat-cell *matCellDef="let player"> {{ player.age }}</td>
+            <th mat-header-cell *matHeaderCellDef>Age</th>
+            <td mat-cell *matCellDef="let player">{{ player.age }}</td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
