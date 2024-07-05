@@ -21,7 +21,7 @@ import { SquadService } from '../squad/squad.service';
   ],
   template: `
     <form>
-      <mat-form-field style="width: 100%">
+      <mat-form-field>
         <mat-label>Competition</mat-label>
         <input matInput
                [matAutocomplete]="auto"
@@ -44,10 +44,10 @@ import { SquadService } from '../squad/squad.service';
         </mat-autocomplete>
       </mat-form-field>
     </form>
-    <mat-slide-toggle [(ngModel)]="autoClose">Auto-close</mat-slide-toggle>
-    <sv-clubs/>
+    <sv-clubs [(autoClose)]="autoClose"/>
   `,
   styles: `
+    mat-form-field { width: 100%; }
     .logo-container { display: inline-block; text-align: right; min-width: 80px; }
     .logo { vertical-align: middle; margin-right: 8px; }
   `

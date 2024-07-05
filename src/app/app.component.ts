@@ -9,7 +9,7 @@ import { SquadComponent } from '../squad/squad.component';
   standalone: true,
   imports: [MatSidenavModule, ToolbarComponent, SidenavComponent, SquadComponent],
   template: `
-    <div id='sv-app'>
+    <div id='app-container'>
       <sv-toolbar (toggle)="sidenav.toggle()" />
       <mat-sidenav-container>
         <mat-sidenav #sidenav mode='side' opened>
@@ -22,9 +22,9 @@ import { SquadComponent } from '../squad/squad.component';
     </div>
   `,
   styles: `
-    #sv-app { height: 100%; display: flex; flex-direction: column; }
-    mat-sidenav { padding: 5px; width: 340px; }
+    #app-container { height: 100%; display: flex; flex-direction: column; }
     mat-sidenav-container { flex: 1; }
+    mat-sidenav { padding: 5px; width: 340px; }
     mat-sidenav-content { padding: 10px; }
   `
 })
